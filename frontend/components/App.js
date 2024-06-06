@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { NavLink, Routes, Route, useNavigate, redirect } from 'react-router-dom'
+import React, { useState , useEffect } from 'react'
+import { NavLink, Routes, Route, useNavigate } from 'react-router-dom'
 import Articles from './Articles'
 import LoginForm from './LoginForm'
 import Message from './Message'
@@ -14,13 +14,13 @@ export default function App() {
   // ✨ MVP can be achieved with these states
   const [message, setMessage] = useState('')
   const [articles, setArticles] = useState([])
-  const [currentArticleId, setCurrentArticleId] = useState()
+  const [currentArticleId, setCurrentArticleId] = useState(null)
   const [spinnerOn, setSpinnerOn] = useState(false)
 
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
-  const redirectToLogin = () => { /* ✨ implement */ }
-  const redirectToArticles = () => { /* ✨ implement */ }
+  const redirectToLogin = () => navigate('/')
+  const redirectToArticles = () => navigate('/articles')
 
   const logout = () => {
     // ✨ implement
@@ -29,7 +29,7 @@ export default function App() {
     // In any case, we should redirect the browser back to the login screen,
     // using the helper above.
     localStorage.removeItem('token')
-    setMessage('Goodbye')
+    setMessage('Goodbye!')
     redirectToLogin()
   }
 
@@ -102,7 +102,7 @@ export default function App() {
         setArticles(articles.map(art => art.article_id === article_id ? res.data.article : art))
         .setMessage(res.data.message)
       })
-      .catch(err => setMessage(err.response.data.message))
+      .catch(err =>  setMessage(err.response?.data?.message || 'An error occured'))
       .finally(() => setSpinnerOn(false))
   }
 
@@ -125,14 +125,14 @@ export default function App() {
       <Spinner on={spinnerOn} />
       <Message message={message}/>
       <button id="logout" onClick={logout}>Logout from app</button>
-      <div id="wrapper" style={{ opacity: spinnerOn ? "0.25" : "1" }}> {/* <-- do not change this line */}
+      <div id="wrapper" style={{ opacity: spinnerOn ? "0.25" : "1" }}> 
         <h1>Advanced Web Applications</h1>
         <nav>
           <NavLink id="loginScreen" to="/">Login</NavLink>
           <NavLink id="articlesScreen" to="/articles">Articles</NavLink>
         </nav>
         <Routes>
-          <Route path="/" element={<LoginForm />} />
+          <Route path="/" element={<LoginForm login={login} />} />
           <Route path="articles" element={
             <>
               <ArticleForm 
