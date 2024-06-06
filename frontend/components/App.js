@@ -100,7 +100,8 @@ export default function App() {
     axios.put(`${articlesUrl}/${article_id}`, article, { headers: { Authorization: token } })
       .then(res => {
         setArticles(articles.map(art => art.article_id === article_id ? res.data.article : art))
-        .setMessage(res.data.message)
+        setMessage(res.data.message)
+        setCurrentArticleId(null)
       })
       .catch(err =>  setMessage(err.response?.data?.message || 'An error occured'))
       .finally(() => setSpinnerOn(false))
